@@ -1,0 +1,42 @@
+
+- name: Prepare Infrastructure
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../roles/create_vpc
+    - role: ../roles/create_default_security_groups
+    - role: ../roles/create_security_groups
+
+- name: Prepare Bastion Host
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../roles/provision_bastion
+
+- name: Prepare Cluster
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../roles/create_instances
+    - role: ../roles/create_dns
+    - role: ../roles/create_ssh
+    - role: ../roles/create_host_groups
+
+- name: Update Instances
+  hosts: created_instances
+  vars:
+    state: 'present'
+  roles:
+    - ../roles/configure_docker
+  remote_user: "{{ instance_user }}"
+
+- name: Prepare Inventory
+  hosts: localhost
+  roles:
+    - role: ../roles/prepare_inventories
+
+- name: Install OpenShift
+  hosts: localhost
+  roles:
+    - role: ../roles/install_openshift
+    

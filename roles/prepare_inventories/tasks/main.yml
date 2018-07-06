@@ -1,0 +1,44 @@
+
+- name: Copy ansible.cfg
+  template:
+    src: "../files/ansible.cfg"
+    dest: "~{{ instance_user }}/ansible.cfg"
+    mode: "0775"
+  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+  remote_user: "{{ instance_user }}"
+
+- name: Copy scripts for OpenShift installation
+  template:
+    src: "../files/install-openshift.sh"
+    dest: "~{{ instance_user }}/install-openshift.sh"
+    mode: "0775"
+  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+  remote_user: "{{ instance_user }}"
+  
+- name: Copy single master inventory
+  template:
+    src: "../files/small_inventory.cfg"
+    dest: "~{{ instance_user }}/inventory"
+  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+  remote_user: "{{ instance_user }}"
+  when:
+    - master_nodes == 1
+    - infra_nodes == 0
+
+- name: Copy single master, 1/2 infra inventory
+  template:
+    src: "../files/medium_inventory.cfg"
+    dest: "~{{ instance_user }}/inventory"
+  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+  remote_user: "{{ instance_user }}"
+  when:
+    - master_nodes == 1
+    - infra_nodes > 0
+
+- name: Copy large inventory
+  template:
+    src: "../files/large_inventory.cfg"
+    dest: "~{{ instance_user }}/inventory"
+  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+  remote_user: "{{ instance_user }}"
+  when: master_nodes > 1

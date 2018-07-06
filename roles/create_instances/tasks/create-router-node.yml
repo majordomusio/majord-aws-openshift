@@ -1,0 +1,35 @@
+
+- name: Provision router node
+  ec2:
+    instance_type: "{{infra_node_type}}"
+    image:  "{{ami_find['images'][0]['image_id']}}"
+    region: "{{ region }}"
+    spot_price: "{{ infra_node_spot_price }}"
+    spot_wait_timeout: 300
+    wait: true
+    key_name: "{{ key_name }}"
+    vpc_subnet_id: "{{subnet_facts['subnet']['id']}}"
+    group: ['{{ namespace }}_internal', '{{ namespace }}_public_ingress', '{{ namespace }}_public_egress', '{{ namespace }}_ssh']
+    volumes:
+      - device_name: "/dev/sda1" 
+        volume_size: "{{ root_volume_size }}"
+        volume_type: gp2        
+        delete_on_termination: true
+      - device_name: "/dev/xvdb"
+        volume_size: "{{ docker_volume_size }}"
+        volume_type: gp2        
+        delete_on_termination: true
+    count_tag:
+      Name: "router_{{ namespace }}"
+    instance_tags:
+      "{'Name':'router_{{ namespace }}','namespace':'{{ namespace }}','kubernetes.io/cluster/{{ namespace }}':'{{ namespace }}','role':'router','group':'cluster'}"
+    exact_count: 1
+    assign_public_ip: yes
+  register: ec2_router
+  
+- name: Register router facts
+  set_fact:
+   router_private_ip: "{{ ec2_router['tagged_instances'][0]['private_ip'] }}"
+   router_public_ip: "{{ ec2_router['tagged_instances'][0]['public_ip'] }}"
+   router_private_dns_name: "{{ ec2_router['tagged_instances'][0]['private_dns_name'] }}"
+   router_public_dns_name: "{{ ec2_router['tagged_instances'][0]['public_dns_name'] }}"

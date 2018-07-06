@@ -1,0 +1,24 @@
+
+# WARNING: THIS DELETES ALL INSTANCES AND VOLUMES. TOTAL WIPE-OUT. YOU HAVE BEEN WARNED!.
+
+- name: Gather EC2 facts
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:namespace": "{{ namespace }}"
+      "tag:role": "bastion"
+  register: ec2_facts
+
+- name: Terminate EC2 VMs
+  ec2:
+    state: absent
+    region: "{{ region }}"
+    instance_ids: "{{ item.instance_id }}"
+    wait: yes
+  with_items: "{{ ec2_facts.instances }}"
+  when: item.state != 'terminated'
+
+- name: Delete public bastion route (e.g. bastion.ocp.example.com)
+  include: delete-route.yml zone="{{ public_dns_zone }}" record="bastion.{{ namespace }}.{{ public_dns_zone }}" private_zone="false"
+  wait: yes
+  ignore_errors: true

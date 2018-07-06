@@ -1,0 +1,23 @@
+
+- name: Update Docker config
+  shell: echo "INSECURE_REGISTRY='--insecure-registry 172.30.0.0/16'" >> /etc/sysconfig/docker
+  become: true
+  
+- name: Prepare Docker storage configuration
+  template:
+    src: "../files/docker-storage-setup"
+    dest: "/etc/sysconfig/docker-storage-setup"
+  become: true
+
+- name: Stop Docker
+  shell: "systemctl stop docker"
+  become: true
+
+- name: Configure Docker storage
+  command: "docker-storage-setup"
+  become: true
+  ignore_errors: true
+
+- name: Enable and restart Docker
+  shell: "systemctl enable docker && systemctl restart docker"
+  become: true

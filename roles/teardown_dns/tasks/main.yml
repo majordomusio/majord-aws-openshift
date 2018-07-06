@@ -1,0 +1,56 @@
+
+- name: List all hosted zones
+  route53_facts:
+    query: hosted_zone
+  register: hosted_zones
+
+- name: Delete private master route (e.g. master.ocp.local)
+  include: delete-route.yml zone="{{ namespace }}.local" record="master.{{ namespace }}.local" private_zone="true"
+  wait: yes
+  ignore_errors: true
+
+- name: Delete private master routes (e.g. master1.ocp.local)
+  include: delete-route.yml zone="{{ namespace }}.local" record="master{{item}}.{{ namespace }}.local" private_zone="true"
+  with_sequence: start=1 end={{master_nodes|int}}
+  wait: yes
+  ignore_errors: true
+  
+- name: Delete public wildcard route (e.g. *.apps.ocp.example.com)
+  include: delete-route.yml zone="{{ public_dns_zone }}" record="*.{{ public_subdomain_prefix }}.{{ namespace }}.{{ public_dns_zone }}" private_zone="false"
+  wait: yes
+  ignore_errors: true
+
+- name: Delete public master route (e.g. master.ocp.example.com)
+  include: delete-route.yml zone="{{ public_dns_zone }}" record="master.{{ namespace }}.{{ public_dns_zone }}" private_zone="false"
+  wait: yes
+  ignore_errors: true
+
+- name: Delete private app node routes (e.g. app1.ocp.local)
+  include: delete-route.yml zone="{{ namespace }}.local" record="app{{item}}.{{ namespace }}.local" private_zone="true"
+  with_sequence: start=1 end={{app_nodes|int}}
+  wait: yes
+  ignore_errors: true
+
+- name: Fake number of infra nodes
+  set_fact:
+    num_of_infra_nodes: 1
+  when: infra_nodes == 0
+
+- name: Effective number of infra nodes
+  set_fact:
+    num_of_infra_nodes: "{{ infra_nodes }}"
+  when: infra_nodes > 0
+
+- name: Delete private infra node routes (e.g. infra1.ocp.local)
+  include: delete-route.yml zone="{{ namespace }}.local" record="infra{{item}}.{{ namespace }}.local" private_zone="true"
+  with_sequence: start=1 end={{num_of_infra_nodes|int}}
+  wait: yes
+  ignore_errors: true
+  when: infra_nodes > 0
+  
+- name: Delete private DNS zone
+  route53_zone:
+    zone: "{{ namespace }}.local"
+    state: "absent"
+    vpc_region: "{{ region }}"
+  wait: yes

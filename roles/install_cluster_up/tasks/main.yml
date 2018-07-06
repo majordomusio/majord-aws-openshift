@@ -1,0 +1,38 @@
+- name: Prepare the node
+  shell: >
+        mkdir -p {{ ocp_root }}/v1
+
+        mkdir -p {{ ocp_root }}/v2
+
+        mkdir -p {{ ocp_root }}/v3
+
+        mkdir -p {{ ocp_root }}/v4
+
+        chmod -R 777 {{ ocp_root }}
+  become: true
+
+- name: Install the CLI
+  shell: >
+        curl -L -0 {{openshift_cli_url}} | tar -zx -C /tmp
+
+        cd /tmp/op* && sudo mv oc /usr/local && sudo ln -sf /usr/local/oc
+        /usr/local/bin/oc
+  become: true
+  
+- name: Create the OpenShift cluster-up script
+  shell: >
+        echo "/usr/local/oc cluster up --public-hostname='api.{{ namespace }}.{{ public_dns_zone }}'
+        --routing-suffix='{{ public_subdomain_prefix }}.{{ namespace }}.{{ public_dns_zone }}' 
+        --host-config-dir={{ ocp_root }}/v1
+        --host-data-dir={{ ocp_root }}/v2
+        --host-pv-dir={{ ocp_root }}/v3
+        --host-volumes-dir={{ ocp_root }}/v4 
+        --use-existing-config=true --logging=false --metrics=false --service-catalog=false --version={{ openshift_version }}" >>
+        {{ ocp_root }}/cluster_up
+
+        chmod +x {{ ocp_root }}/cluster_up
+  become: true
+
+- name: Start the OpenShift cluster
+  shell: "{{ ocp_root }}/cluster_up"
+  become: true

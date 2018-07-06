@@ -1,0 +1,66 @@
+
+- name: Provision VPC
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_cidr }}"
+    tags:
+      Name: "{{ vpc_name }}"
+      namespace: "{{ vpc_name }}"
+    region: "{{ region }}"
+    state: "present"
+  register: vpc_facts
+
+- name: PAUSE
+  pause:
+    seconds: "{{ vpc_setup_delay }}"
+
+- name: Provision Internet Gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ vpc_facts['vpc']['id'] }}"
+    region: "{{ region }}"
+    state: "present"
+  register: igw_facts
+
+- name: PAUSE
+  pause:
+    seconds: "{{ 2 * vpc_setup_delay }}"
+
+- name: Provision Subnet
+  ec2_vpc_subnet:
+    vpc_id: "{{ vpc_facts['vpc']['id'] }}"
+    cidr: "{{ subnet_cidr }}"
+    tags:
+      Name: "{{ vpc_name }}_subnet"
+      namespace: "{{ vpc_name }}"
+    region: "{{ region }}"
+    state: "present"
+    wait: yes
+  register: subnet_facts
+
+- name: PAUSE
+  pause:
+    seconds: "{{ vpc_setup_delay }}"
+    
+- name: Set up public subnet route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc_facts['vpc']['id'] }}"
+    tags:
+      Name: "{{ vpc_name }}_route"
+      namespace: "{{ vpc_name }}"
+    subnets:
+      - "{{ subnet_facts['subnet']['id'] }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw_facts['gateway_id'] }}"
+    region: "{{ region }}"
+    state: "present"
+  register: route_facts
+
+- name: PAUSE
+  pause:
+    seconds: "{{ vpc_setup_delay }}"
+
+- name: Register VPC facts
+  set_fact:
+    vpc_id: "{{ vpc_facts['vpc']['id'] }}"
+    availability_zone: "{{ subnet_facts['subnet']['availability_zone'] }}"

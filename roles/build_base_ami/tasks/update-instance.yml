@@ -1,0 +1,77 @@
+
+
+- name: Fix yum mirror speedtest files
+  shell: >
+        rm -f /var/cache/yum/x86_64/7/timedhosts
+        
+        rm -f /var/cache/yum/x86_64/7/timedhosts.txt
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"  
+  become: true
+
+- name: Upgrade packages
+  yum: name=* state=latest
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  become: true
+
+- name: Install EPEL
+  yum:
+    name:
+      - "epel-release"
+    state: "present"
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  become: true
+
+- name: Install essential packages
+  yum:
+    name:
+      - "wget"
+      - "net-tools"
+      - "ntp"
+      - "bind-utils"
+      - "iptables-services"
+      - "bridge-utils"
+      - "bash-completion"
+      - "kexec-tools"
+      - "sos"
+      - "psacct"
+      - "docker-1.13.1"
+      - "NetworkManager"
+      # Needed for metrics, see: https://github.com/openshift/openshift-ansible/issues/4282
+      - "python-passlib"
+      # Also needed for metrics:
+      - "httpd-tools"
+    state: "present"
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  become: true
+
+#
+# see 
+# https://github.com/openshift/openshift-ansible/issues/5236
+#
+# and
+# https://github.com/openshift/openshift-ansible/issues/4950 
+#
+#- name: Enable NetworkManager
+#  shell: "systemctl enable NetworkManager && systemctl restart NetworkManager"
+#  delegate_to: "{{ base_public_ip }}"
+#  remote_user: "{{ instance_user }}"  
+#  become: true
+
+- name: Add a swap file
+  shell: >
+        dd if=/dev/zero of=/swapfile count=8192 bs=1M
+
+        chmod 600 /swapfile
+
+        mkswap /swapfile
+
+        swapon /swapfile
+
+        echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"  
+  become: true

@@ -1,0 +1,8 @@
+
+- name: Teardown Single Node
+  hosts: localhost
+  gather_facts: false
+  roles:
+  - role: ../roles/deprovision_single_node
+  - role: ../roles/teardown_security_groups
+  - role: ../roles/teardown_vpc

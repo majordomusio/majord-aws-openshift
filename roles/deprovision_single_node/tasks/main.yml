@@ -1,0 +1,29 @@
+
+# WARNING: THIS DELETES ALL INSTANCES AND VOLUMES. TOTAL WIPE-OUT. YOU HAVE BEEN WARNED!.
+
+- name: Gather EC2 facts
+  ec2_remote_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:namespace": "{{ namespace }}"
+      "tag:role": "api"
+  register: ec2_facts
+
+- name: Terminate EC2 VMs
+  ec2:
+    state: absent
+    region: "{{ region }}"
+    instance_ids: "{{ item.id }}"
+    wait: yes
+  with_items: "{{ ec2_facts.instances }}"
+  when: item.state != 'terminated'
+
+- name: Delete public node route (e.g. node.ocp.example.com)
+  include: delete-route.yml zone="{{ public_dns_zone }}" record="node.{{ namespace }}.{{ public_dns_zone }}" private_zone="false"
+  wait: yes
+  ignore_errors: true
+
+- name: Delete public apps route (e.g. apps.ocp.example.com)
+  include: delete-route.yml zone="{{ public_dns_zone }}" record="*.{{ public_subdomain_prefix }}.{{ namespace }}.{{ public_dns_zone }}" private_zone="false"
+  wait: yes
+  ignore_errors: true

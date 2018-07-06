@@ -1,0 +1,41 @@
+
+- name: Find AMI
+  ec2_ami_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": "{{ ami_name }}"
+  register: "ami_find"
+  
+- name: Provision bastion host
+  include: provision-bastion.yml
+
+- name: Install additional packages on bastion
+  yum:
+    name:
+      - "git"
+      - "@Development Tools"
+      - "java-1.8.0-openjdk"
+      - "openssl-devel"
+      - "python-devel"
+      - "gcc"
+      - "libffi-devel"
+      - "python-crypto"
+      - "python-keyczar"
+      - "python-httplib2"
+      - "python-paramiko"
+      - "python2-jmespath"
+      - "sshpass"
+      - "ansible"
+    state: "present"
+  delegate_to: "{{ bastion_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  become: true
+
+- name: Checkout openshift-ansible playbooks
+  git:
+    repo: "https://github.com/openshift/openshift-ansible"
+    dest: "~{{ instance_user }}/openshift-ansible"
+    version: "{{ openshift_ansible_branch }}"
+  delegate_to: "{{ bastion_public_ip }}"
+  remote_user: "{{ instance_user }}"
+

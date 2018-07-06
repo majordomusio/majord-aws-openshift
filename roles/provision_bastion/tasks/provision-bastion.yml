@@ -1,0 +1,57 @@
+
+- name: Provision bastion
+  ec2:
+    instance_type: "{{ bastion_instance_type }}"
+    image:  "{{ami_find['images'][0]['image_id']}}"
+    region: "{{ region }}"
+    spot_price: "{{ bastion_spot_price }}"
+    spot_wait_timeout: 300
+    wait: true
+    key_name: "{{ key_name }}"
+    vpc_subnet_id: "{{ subnet_facts['subnet']['id'] }}"
+    group: ['{{ namespace }}_internal', '{{ namespace }}_ssh', '{{ namespace }}_public_egress']
+    volumes:
+      - device_name: "/dev/sda1" 
+        volume_size: "{{root_volume_size}}"
+        volume_type: gp2        
+        delete_on_termination: true
+      - device_name: "/dev/xvdb"
+        volume_size: "{{docker_volume_size}}"
+        volume_type: gp2        
+        delete_on_termination: true
+    count_tag:
+      Name: "bastion_{{ namespace }}"
+    instance_tags:
+      Name: "bastion_{{ namespace }}"
+      namespace: "{{ namespace }}"
+      role: "bastion"
+      group: "admin"
+    exact_count: 1
+    assign_public_ip: yes
+  register: ec2_bastion
+
+- name: Register VM facts
+  set_fact:
+   bastion_private_ip: "{{ ec2_bastion['tagged_instances'][0]['private_ip'] }}"
+   bastion_public_ip: "{{ ec2_bastion['tagged_instances'][0]['public_ip'] }}"
+
+- name: Add public bastion A record
+  route53:
+    zone: "{{public_dns_zone}}"
+    record: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+    type: A
+    ttl: 300
+    value: "{{ bastion_public_ip }}"
+    wait: yes
+    command: "create"
+    overwrite: yes
+
+- name: Wait for SSH to come up
+  wait_for:
+    host: '{{ item }}'
+    port: 22
+    delay: 60
+    timeout: 300
+    state: started
+  with_items:
+    - "{{ bastion_public_ip }}"

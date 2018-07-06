@@ -1,0 +1,41 @@
+
+- name: Generating bastion key for instance user
+  user:
+    name: "{{ instance_user }}"
+    generate_ssh_key: yes
+  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+  remote_user: "{{ instance_user }}"
+
+- name: Register bastion pub key
+  shell: "cat /home/{{ instance_user }}/.ssh/id_rsa.pub"
+  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
+  remote_user: "{{ instance_user }}"
+  register: "bastion_rsa_pub"
+
+- name: Install bastion pub key on masters
+  authorized_key: user="{{ instance_user }}" key="{{ bastion_rsa_pub.stdout }}"
+  delegate_to: "{{ item.public_ip }}"
+  remote_user: "{{ instance_user }}"
+  with_items:
+    - "{{ all_master_nodes }}"
+
+- name: Install bastion pub key on app nodes
+  authorized_key: user="{{ instance_user }}" key="{{ bastion_rsa_pub.stdout }}"
+  delegate_to: "{{ item.public_ip }}"
+  remote_user: "{{ instance_user }}"
+  with_items:
+    - "{{ all_app_nodes }}"
+
+- name: Install bastion pub key on infra nodes
+  authorized_key: user="{{ instance_user }}" key="{{ bastion_rsa_pub.stdout }}"
+  delegate_to: "{{ item.public_ip }}"
+  remote_user: "{{ instance_user }}"
+  with_items:
+    - "{{ all_infra_nodes }}"
+  when: infra_nodes > 0
+
+- name: Install bastion pub key on router node
+  authorized_key: user="{{ instance_user }}" key="{{ bastion_rsa_pub.stdout }}"
+  delegate_to: "{{ router_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  when: master_nodes > 1
