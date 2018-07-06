@@ -24,6 +24,7 @@
 
 - name: Configure Cluster
   hosts: created_instances
+  gather_facts: false
   vars:
     state: 'present'
   roles:
