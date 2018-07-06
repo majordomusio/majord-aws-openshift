@@ -7,13 +7,13 @@
     - role: ../roles/create_default_security_groups
     - role: ../roles/create_security_groups
 
-- name: Prepare Bastion Host
+- name: Prepare Bastion
   hosts: localhost
   gather_facts: false
   roles:
     - role: ../roles/provision_bastion
 
-- name: Prepare Cluster
+- name: Provision Cluster
   hosts: localhost
   gather_facts: false
   roles:
@@ -22,10 +22,10 @@
     - role: ../roles/create_ssh
     - role: ../roles/create_host_groups
 
-- name: Update Instances
+- name: Configure Cluster
   hosts: created_instances
   vars:
     state: 'present'
   roles:
-    - ../roles/configure_docker
+    - ../roles/configure_instances
   remote_user: "{{ instance_user }}"
