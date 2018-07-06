@@ -1,11 +1,6 @@
 
-- name: Prepare Inventory
+- name: Install OpenShift
   hosts: localhost
   roles:
-    - role: ../roles/prepare_inventory
-
-#- name: Install OpenShift
-#  hosts: localhost
-#  roles:
-#    - role: ../roles/install_openshift
-    
+    - role: ../roles/create_inventory
+#    - role: ../roles/provision_openshift
