@@ -29,14 +29,3 @@
   roles:
     - ../roles/configure_docker
   remote_user: "{{ instance_user }}"
-
-- name: Prepare Inventory
-  hosts: localhost
-  roles:
-    - role: ../roles/prepare_inventories
-
-- name: Install OpenShift
-  hosts: localhost
-  roles:
-    - role: ../roles/install_openshift
-    

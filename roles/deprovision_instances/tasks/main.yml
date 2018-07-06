@@ -28,9 +28,6 @@
         "{'tag:kubernetes.io/cluster/{{ namespace }}':'owned','status':'available'}"
   register: aws_volumes
 
-- debug:
-    msg: "{{aws_volumes}}"
-
 - name: Delete dynamic volumes
   ec2_vol:
     region: "{{ region }}"

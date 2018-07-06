@@ -1,4 +1,15 @@
 
+- name: Gather EC2 facts
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:namespace": "{{ namespace }}"
+  register: ec2_facts
+
+- name: Register facts
+  set_fact:
+    availability_zone: "{{ ec2_facts['instances'][0]['placement']['availability_zone'] }}"
+
 - name: Copy ansible.cfg
   template:
     src: "../files/ansible.cfg"
@@ -9,8 +20,8 @@
 
 - name: Copy scripts for OpenShift installation
   template:
-    src: "../files/install-openshift.sh"
-    dest: "~{{ instance_user }}/install-openshift.sh"
+    src: "../files/deploy.sh"
+    dest: "~{{ instance_user }}/deploy.sh"
     mode: "0775"
   delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
   remote_user: "{{ instance_user }}"

@@ -1,5 +1,5 @@
 
 - name: Run OpenShift installation
-  shell: './install-openshift.sh |& tee install-openshift.log'
+  shell: './deploy.sh |& tee deploy.log'
   delegate_to: "{{ bastion_public_ip }}"
   remote_user: "{{ instance_user }}"

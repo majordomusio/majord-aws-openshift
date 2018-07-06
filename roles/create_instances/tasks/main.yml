@@ -14,21 +14,21 @@
 
 - include_tasks: create-host-groups.yml
 
-- name: Wait for masters SSH to come up
-  wait_for:
-    host: '{{ item.public_ip }}'
-    port: 22
-    state: started
-  with_items:
-    - "{{ all_master_nodes }}"
+#- name: Wait for masters SSH to come up
+#  wait_for:
+#    host: '{{ item.public_ip }}'
+#    port: 22
+#    state: started
+#  with_items:
+#    - "{{ all_master_nodes }}"
 
-- name: Wait for app node SSH to come up
-  wait_for:
-    host: '{{ item.public_ip }}'
-    port: 22
-    state: started
-  with_items:
-    - "{{ all_app_nodes }}"
+#- name: Wait for app node SSH to come up
+#  wait_for:
+#    host: '{{ item.public_ip }}'
+#    port: 22
+#    state: started
+#  with_items:
+#    - "{{ all_app_nodes }}"
 
 - name: Wait for infra node SSH to come up
   wait_for:
@@ -37,4 +37,3 @@
     state: started
   with_items:
     - "{{ all_infra_nodes }}"
-  when: infra_nodes > 0

@@ -1,0 +1,11 @@
+
+- name: Prepare Inventory
+  hosts: localhost
+  roles:
+    - role: ../roles/prepare_inventory
+
+#- name: Install OpenShift
+#  hosts: localhost
+#  roles:
+#    - role: ../roles/install_openshift
+    
