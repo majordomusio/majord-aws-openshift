@@ -37,18 +37,6 @@
     value: "{{ all_master_nodes|map(attribute='public_ip')|join(',') }}"
     command: "create"
     overwrite: yes
-  when: master_nodes == 1
-
-- name: Add public master A record (e.g. master.ocp.example.com)
-  route53:
-    zone: "{{public_dns_zone}}"
-    record: "master.{{ namespace }}.{{public_dns_zone}}"
-    type: A
-    ttl: 300
-    value: "{{ router_public_ip }}"
-    command: "create"
-    overwrite: yes
-  when: master_nodes > 1
 
 - name: Add private master A records (e.g. master1.ocp.local)
   route53:
@@ -96,23 +84,6 @@
     command: "create"
     overwrite: yes
   with_items: "{{ all_infra_nodes }}"
-  when: infra_nodes > 0
-
-#
-# Ingress point for apps running on the cluster
-#
-
-- name: Add public wildcard A record, mapped to masters (e.g. *.apps.ocp.example.com)
-  route53:
-    zone: "{{public_dns_zone}}"
-    record: "*.{{public_subdomain_prefix}}.{{ namespace }}.{{public_dns_zone}}"
-    type: A
-    ttl: 300
-    value: "{{ all_master_nodes|map(attribute='public_ip')|join(',') }}"
-    command: "create"
-    overwrite: yes
-    wait: yes
-  when: infra_nodes == 0
 
 - name: Add public wildcard A record, mapped to infra nodes (e.g. *.apps.ocp.example.com)
   route53:
@@ -124,6 +95,5 @@
     command: "create"
     overwrite: yes
     wait: yes
-  when: infra_nodes > 0
 
 # Keep the 'wait' attribute on the last DNS operation to give Route53 some time to replicate all updated setting before we move on.

@@ -1,0 +1,51 @@
+#
+# WARNING: MAKE SURE THIS FILE GETS NEVER COMMITED TO ANY REPO !!!
+#
+
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+      ansible_python_interpreter: python
+  vars:
+    # AWS access key
+    aws_access_key: AK..
+    aws_secret_key: 7t..
+    
+    # The AWS region to deploy to
+    region: eu-west-1
+
+    # CentOS base image ID
+    image_id: ami-6e28b517
+
+    # AWS keyname and local keyfile location
+    key_name: openshift
+    ansible_ssh_private_key_file: ~/.ssh/openshift.pem
+
+    # Cluster size
+    master_nodes: 1
+    infra_nodes: 1
+    app_nodes: 1
+
+    # Cluster ID
+    namespace: workshop
+
+    # Instance Size and Spot Price
+    infra_node_type: "m4.xlarge"
+    app_node_type: "m4.xlarge"
+
+    bastion_spot_price: 0.03
+    infra_node_spot_price: 0.08
+    app_node_spot_price: 0.08
+
+    # Public DNS zone setup
+    public_dns_zone: banga.mx
+    public_subdomain_prefix: svc
+
+    # Networking
+    vpc_name: "workshop"
+    vpc_cidr: "10.0.0.0/16"
+    subnet_cidr: "10.0.2.0/24"
+    
+# *.svc.workshop.banga.mx
+# master.workshop.banga.mx

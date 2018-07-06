@@ -21,11 +21,3 @@
   with_items: "{{ all_infra_nodes }}"
   when: infra_nodes > 0
   
-- name: Add router to created_instances group
-  add_host:
-    name={{ item.ip }}
-    groups=created_instances
-    instance_name={{ item.name }}
-  with_items:
-    - { name: 'router', ip: '{{router_public_ip}}' }
-  when: master_nodes > 1

@@ -11,10 +11,6 @@
 - include_tasks: create-app-nodes.yml
 
 - include_tasks: create-infra-nodes.yml
-  when: infra_nodes > 0
-
-- include_tasks: create-router-node.yml
-  when: master_nodes > 1
 
 - include_tasks: create-host-groups.yml
 

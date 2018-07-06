@@ -15,30 +15,9 @@
   delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
   remote_user: "{{ instance_user }}"
   
-- name: Copy single master inventory
+- name: Create the inventory
   template:
-    src: "../files/small_inventory.cfg"
+    src: "../files/inventory_template.cfg"
     dest: "~{{ instance_user }}/inventory"
   delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
   remote_user: "{{ instance_user }}"
-  when:
-    - master_nodes == 1
-    - infra_nodes == 0
-
-- name: Copy single master, 1/2 infra inventory
-  template:
-    src: "../files/medium_inventory.cfg"
-    dest: "~{{ instance_user }}/inventory"
-  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
-  remote_user: "{{ instance_user }}"
-  when:
-    - master_nodes == 1
-    - infra_nodes > 0
-
-- name: Copy large inventory
-  template:
-    src: "../files/large_inventory.cfg"
-    dest: "~{{ instance_user }}/inventory"
-  delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
-  remote_user: "{{ instance_user }}"
-  when: master_nodes > 1
