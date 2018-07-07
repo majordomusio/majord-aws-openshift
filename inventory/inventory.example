@@ -9,18 +9,22 @@ all:
       ansible_python_interpreter: python
   vars:
     # AWS access key
-    aws_access_key: AK..
+    aws_access_key: AKI..
     aws_secret_key: 7t..
     
     # The AWS region to deploy to
-    region: eu-west-1
+    region: eu-central-1
 
     # CentOS base image ID
-    image_id: ami-6e28b517
+    # See https://wiki.centos.org/Cloud/AWS for a list of official CentOS 7 Public Images
+    image_id: ami-337be65c
+
+    # Sudo user for the image
+    instance_user: centos
 
     # AWS keyname and local keyfile location
-    key_name: openshift
-    ansible_ssh_private_key_file: ~/.ssh/openshift.pem
+    key_name: openshift_eu_central
+    ansible_ssh_private_key_file: ~/.ssh/openshift_eu_central.pem
 
     # Cluster size
     master_nodes: 1
@@ -30,7 +34,12 @@ all:
     # Cluster ID
     namespace: workshop
 
-    # Instance Size and Spot Price
+    #
+    # Instance types use for the different roles
+    #
+    # See https://aws.amazon.com/ec2/pricing/on-demand/ for details on AWS instance sizes and pricing
+    #
+    bastion_instance_type: "t2.small"
     infra_node_type: "m4.xlarge"
     app_node_type: "m4.xlarge"
 
@@ -42,10 +51,28 @@ all:
     public_dns_zone: banga.mx
     public_subdomain_prefix: svc
 
+    #
+    # ONLY CHANGE BELOW HERE IF YOU KNOW WHAT YOU ARE DOING
+    #
+
+    # The name and tag for the base ami
+    ami_name: centos_base
+
+    # OpenShift version
+    deployment_type: "origin"
+    openshift_release: "v3.9"
+    openshift_ansible_branch: "release-3.9"
+
     # Networking
     vpc_name: "workshop"
     vpc_cidr: "10.0.0.0/16"
     subnet_cidr: "10.0.2.0/24"
+    vpc_setup_delay: 15
+
+    # Volume size
+    root_volume_size: 50
+    docker_volume_size: 50
+
     
 # *.svc.workshop.banga.mx
 # master.workshop.banga.mx
