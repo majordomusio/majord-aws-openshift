@@ -1,0 +1,13 @@
+
+- name: Gather facts 
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../../roles/get_vpc_facts
+  
+- name: Build AMI
+  hosts: localhost
+  roles:
+    - role: ../roles/build_node_ami
+
+
