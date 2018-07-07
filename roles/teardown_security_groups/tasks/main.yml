@@ -10,3 +10,15 @@
     name: "{{ namespace }}_public_egress"
     region: "{{ region }}"
     state: "absent"
+
+- name: Delete intra-node security group
+  ec2_group:
+    name: "{{ namespace }}_internal"
+    region: "{{ region }}"
+    state: "absent"
+
+- name: Delete SSH security group
+  ec2_group:
+    name: "{{ namespace }}_ssh"
+    region: "{{ region }}"
+    state: "absent"

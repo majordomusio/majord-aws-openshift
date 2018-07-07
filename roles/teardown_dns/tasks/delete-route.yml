@@ -5,7 +5,7 @@
     zone: "{{ zone }}"
     record: "{{ record }}"
     type: A
-    private_zone: "{{private_zone}}"
+    private_zone: "{{ private_zone }}"
   register: rec
   ignore_errors: yes
 
@@ -17,6 +17,6 @@
     ttl: "{{ rec.set.ttl }}"
     type: "{{ rec.set.type }}"
     value: "{{ rec.set.value }}"
-    private_zone: "{{private_zone}}"
+    private_zone: "{{ private_zone }}"
   when: not((rec.set.record is undefined) or (rec.set.record is none))
   ignore_errors: yes

@@ -7,7 +7,7 @@
 - name: Delete private master route (e.g. master.ocp.local)
   include: delete-route.yml zone="{{ namespace }}.local" record="master.{{ namespace }}.local" private_zone="true"
   wait: yes
-  ignore_errors: true
+  #ignore_errors: true
 
 - name: Delete private master routes (e.g. master1.ocp.local)
   include: delete-route.yml zone="{{ namespace }}.local" record="master{{item}}.{{ namespace }}.local" private_zone="true"

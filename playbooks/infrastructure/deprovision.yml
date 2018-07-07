@@ -4,5 +4,4 @@
   gather_facts: false
   roles:
     - role: ../../roles/teardown_security_groups
-    - role: ../../roles/teardown_default_security_groups
     - role: ../../roles/teardown_dns

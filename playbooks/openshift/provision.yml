@@ -1,0 +1,8 @@
+
+- name: Install OpenShift
+  hosts: localhost
+  roles:
+    - role: ../../roles/get_availability_zone
+    - role: ../../roles/get_vpc_facts
+    - role: ../../roles/create_inventory
+#    - role: ../roles/provision_openshift
