@@ -43,6 +43,7 @@
       - "sshpass"
       - "ansible"
       - "wget"
+      - "httpd-tools"
     state: "present"
   delegate_to: "{{ base_public_ip }}"
   remote_user: "{{ instance_user }}"
