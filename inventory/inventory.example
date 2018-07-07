@@ -62,6 +62,7 @@ all:
     deployment_type: "origin"
     openshift_release: "v3.9"
     openshift_ansible_branch: "release-3.9"
+    openshift_ansible_repo: "https://github.com/openshift/openshift-ansible"
 
     # Networking
     vpc_name: "demo"

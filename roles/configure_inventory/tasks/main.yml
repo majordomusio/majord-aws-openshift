@@ -1,7 +1,7 @@
 
 - name: Checkout openshift-ansible playbooks
   git:
-    repo: "https://github.com/openshift/openshift-ansible"
+    repo: "{{ openshift_ansible_repo }}"
     dest: "~{{ instance_user }}/openshift-ansible"
     version: "{{ openshift_ansible_branch }}"
   delegate_to: "bastion.{{ namespace }}.{{ public_dns_zone }}"
