@@ -12,7 +12,7 @@
     region: "{{ region }}"
     wait: true
     key_name: "{{ key_name }}"
-    vpc_subnet_id: "{{ subnet_facts['subnet']['id'] }}"
+    vpc_subnet_id: "{{ subnet_id }}"
     group: ['{{ namespace }}_ssh', '{{ namespace }}_internal']
     volumes:
       - device_name: "{{ ami_find['images'][0]['root_device_name'] }}" 

@@ -8,7 +8,7 @@
     spot_wait_timeout: 300
     wait: true
     key_name: "{{ key_name }}"
-    vpc_subnet_id: "{{subnet_facts['subnet']['id']}}"
+    vpc_subnet_id: "{{subnet_id}}"
     group: ['{{ namespace }}_internal', '{{ namespace }}_public_ingress', '{{ namespace }}_public_egress', '{{ namespace }}_ssh']
     volumes:
       - device_name: "/dev/sda1"

@@ -1,0 +1,8 @@
+
+- name: Prepare Infrastructure
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../../roles/create_vpc
+    - role: ../../roles/create_default_security_groups
+    - role: ../../roles/create_security_groups

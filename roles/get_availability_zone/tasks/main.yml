@@ -1,0 +1,11 @@
+
+- name: Gather EC2 facts
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:namespace": "{{ namespace }}"
+  register: ec2_facts
+
+- name: Register facts
+  set_fact:
+    availability_zone: "{{ ec2_facts['instances'][0]['placement']['availability_zone'] }}"

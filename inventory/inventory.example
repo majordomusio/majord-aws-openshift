@@ -32,7 +32,7 @@ all:
     app_nodes: 1
 
     # Cluster ID
-    namespace: workshop
+    namespace: demo
 
     #
     # Instance types use for the different roles
@@ -64,7 +64,7 @@ all:
     openshift_ansible_branch: "release-3.9"
 
     # Networking
-    vpc_name: "workshop"
+    vpc_name: "demo"
     vpc_cidr: "10.0.0.0/16"
     subnet_cidr: "10.0.2.0/24"
     vpc_setup_delay: 15
