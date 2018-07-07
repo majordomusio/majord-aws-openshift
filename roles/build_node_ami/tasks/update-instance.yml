@@ -48,19 +48,6 @@
   remote_user: "{{ instance_user }}"
   become: true
 
-#
-# see 
-# https://github.com/openshift/openshift-ansible/issues/5236
-#
-# and
-# https://github.com/openshift/openshift-ansible/issues/4950 
-#
-#- name: Enable NetworkManager
-#  shell: "systemctl enable NetworkManager && systemctl restart NetworkManager"
-#  delegate_to: "{{ base_public_ip }}"
-#  remote_user: "{{ instance_user }}"  
-#  become: true
-
 - name: Add a swap file
   shell: >
         dd if=/dev/zero of=/swapfile count=8192 bs=1M

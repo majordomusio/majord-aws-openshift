@@ -9,7 +9,8 @@
 - name: Build AMI
   hosts: localhost
   roles:
-    - role: ../roles/build_base_ami
+    - role: ../roles/build_node_ami
+    - role: ../roles/build_bastion_ami
 
 - name: Remove the infrastructure
   hosts: localhost

@@ -3,7 +3,7 @@
   ec2_ami_facts:
     region: "{{ region }}"
     filters:
-      name: "{{ ami_name }}"
+      name: "{{ ami_name }}_bastion"
   register: "base_ami"
 
 - name: Remove existing AMI
@@ -31,9 +31,9 @@
   ec2_ami:
     instance_id: "{{ instance_id }}"
     region: "{{ region }}"
-    name: "{{ ami_name }}"
+    name: "{{ ami_name }}_bastion"
     tags:
-      Name: "{{ ami_name }}"
+      Name: "{{ ami_name }}_bastion"
   #  wait: yes
 
 #
@@ -44,7 +44,7 @@
   ec2_ami_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": "{{ ami_name }}"
+      "tag:Name": "{{ ami_name }}_bastion"
   register: "ami_find"
   until: ami_find.images|length > 0
   retries: 20

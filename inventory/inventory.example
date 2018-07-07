@@ -56,7 +56,7 @@ all:
     #
 
     # The name and tag for the base ami
-    ami_name: centos_base
+    ami_name: centos7
 
     # OpenShift version
     deployment_type: "origin"

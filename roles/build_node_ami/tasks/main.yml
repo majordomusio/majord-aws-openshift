@@ -1,0 +1,59 @@
+
+- name: Find existing AMI
+  ec2_ami_facts:
+    region: "{{ region }}"
+    filters:
+      name: "{{ ami_name }}_node"
+  register: "base_ami"
+
+- name: Remove existing AMI
+  ec2_ami:
+    image_id: "{{ base_ami['images'][0]['image_id'] }}"
+    region: "{{ region }}"
+    delete_snapshot: yes
+    state: absent
+  ignore_errors: true
+  
+- name: Create a new instance
+  include: provision-instance.yml
+
+- name: Update the instance
+  include: update-instance.yml
+
+- name: Stop the instance
+  ec2:
+    instance_id: "{{ instance_id }}"
+    region: "{{ region }}"
+    state: stopped
+    wait: yes
+
+- name: Register a new AMI
+  ec2_ami:
+    instance_id: "{{ instance_id }}"
+    region: "{{ region }}"
+    name: "{{ ami_name }}_node"
+    tags:
+      Name: "{{ ami_name }}_node"
+  #  wait: yes
+
+#
+# This task is only a workaround for now since ec2_ami seems to have a bug in Ansible 2.5
+# See https://stackoverflow.com/questions/49676920/why-is-ec2-ami-complaining-about-unknown-parameter-waiterconfig
+#
+- name: Wait for the AMI to be ready
+  ec2_ami_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": "{{ ami_name }}_node"
+  register: "ami_find"
+  until: ami_find.images|length > 0
+  retries: 20
+  delay: 10
+
+- name: Remove the instance
+  ec2:
+    instance_id: "{{ instance_id }}"
+    region: "{{ region }}"
+    state: absent
+    wait: yes
+

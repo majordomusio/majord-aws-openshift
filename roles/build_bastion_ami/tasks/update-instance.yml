@@ -1,0 +1,64 @@
+
+
+- name: Fix yum mirror speedtest files
+  shell: >
+        rm -f /var/cache/yum/x86_64/7/timedhosts
+        
+        rm -f /var/cache/yum/x86_64/7/timedhosts.txt
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"  
+  become: true
+
+- name: Upgrade packages
+  yum: name=* state=latest
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  become: true
+
+- name: Install EPEL
+  yum:
+    name:
+      - "epel-release"
+    state: "present"
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  become: true
+
+- name: Install essential packages
+  yum:
+    name:
+      - "git"
+      - "@Development Tools"
+      - "java-1.8.0-openjdk"
+      - "openssl-devel"
+      - "python-devel"
+      - "gcc"
+      - "libffi-devel"
+      - "python-crypto"
+      - "python-keyczar"
+      - "python-httplib2"
+      - "python-paramiko"
+      - "python2-jmespath"
+      - "python-passlib"
+      - "sshpass"
+      - "ansible"
+      - "wget"
+    state: "present"
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"
+  become: true
+
+- name: Add a swap file
+  shell: >
+        dd if=/dev/zero of=/swapfile count=8192 bs=1M
+
+        chmod 600 /swapfile
+
+        mkswap /swapfile
+
+        swapon /swapfile
+
+        echo "/swapfile   none    swap    sw    0   0" >> /etc/fstab
+  delegate_to: "{{ base_public_ip }}"
+  remote_user: "{{ instance_user }}"  
+  become: true
