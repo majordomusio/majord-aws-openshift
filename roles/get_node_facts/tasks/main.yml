@@ -1,0 +1,45 @@
+
+- name: Gather app node facts
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:namespace": "{{ namespace }}"
+      "tag:group": "cluster"
+      "tag:role": "app"
+  register: ec2_app_facts
+
+- name: Register app node facts
+  set_fact:
+    all_app_nodes: "{{ all_app_nodes|default([]) + [ { 'cn':item.tags.cn, 'public_ip':item.public_ip_address, 'private_ip':item.private_ip_address, 'public_dns_name':item.public_dns_name, 'private_dns_name':item.private_dns_name } ] }}"
+  with_items: "{{ ec2_app_facts.instances }}"
+  when: item.state.name == 'running'
+
+- name: Gather infra node facts
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:namespace": "{{ namespace }}"
+      "tag:group": "cluster"
+      "tag:role": "infra"
+  register: ec2_infra_facts
+
+- name: Register infra node facts
+  set_fact:
+    all_infra_nodes: "{{ all_infra_nodes|default([]) + [ { 'cn':item.tags.cn, 'public_ip':item.public_ip_address, 'private_ip':item.private_ip_address, 'public_dns_name':item.public_dns_name, 'private_dns_name':item.private_dns_name } ] }}"
+  with_items: "{{ ec2_infra_facts.instances }}"
+  when: item.state.name == 'running'
+
+- name: Gather master node facts
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:namespace": "{{ namespace }}"
+      "tag:group": "cluster"
+      "tag:role": "master"
+  register: ec2_master_facts
+
+- name: Register master node facts
+  set_fact:
+    all_master_nodes: "{{ all_master_nodes|default([]) + [ { 'cn':item.tags.cn, 'public_ip':item.public_ip_address, 'private_ip':item.private_ip_address, 'public_dns_name':item.public_dns_name, 'private_dns_name':item.private_dns_name } ] }}"
+  with_items: "{{ ec2_master_facts.instances }}"
+  when: item.state.name == 'running'

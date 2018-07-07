@@ -4,5 +4,6 @@
   roles:
     - role: ../../roles/get_availability_zone
     - role: ../../roles/get_vpc_facts
-    - role: ../../roles/create_inventory
+    - role: ../../roles/get_node_facts
+    - role: ../../roles/configure_inventory
 #    - role: ../roles/provision_openshift
