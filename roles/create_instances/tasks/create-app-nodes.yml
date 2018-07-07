@@ -2,7 +2,7 @@
 - name: Provision app nodes
   ec2:
     instance_type: "{{app_node_type}}"
-    image:  "{{ami_find['images'][0]['image_id']}}"
+    image:  "{{node_ami_find['images'][0]['image_id']}}"
     region: "{{ region }}"
     spot_price: "{{ app_node_spot_price }}"
     spot_wait_timeout: 300

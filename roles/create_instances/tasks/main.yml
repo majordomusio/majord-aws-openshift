@@ -1,10 +1,19 @@
 
-- name: Find AMI
+- name: Find Node AMI
   ec2_ami_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": "{{ ami_name }}"
-  register: "ami_find"
+      "tag:Name": "{{ ami_name }}_node"
+  register: "node_ami_find"
+
+- name: Find Bastion AMI
+  ec2_ami_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": "{{ ami_name }}_bastion"
+  register: "bastion_ami_find"
+
+- include_tasks: create-bastion.yml
 
 - include_tasks: create-masters.yml
 

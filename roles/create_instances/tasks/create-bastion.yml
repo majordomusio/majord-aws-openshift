@@ -2,7 +2,7 @@
 - name: Provision bastion
   ec2:
     instance_type: "{{ bastion_instance_type }}"
-    image:  "{{ami_find['images'][0]['image_id']}}"
+    image:  "{{bastion_ami_find['images'][0]['image_id']}}"
     region: "{{ region }}"
     spot_price: "{{ bastion_spot_price }}"
     spot_wait_timeout: 300
@@ -45,13 +45,3 @@
     wait: yes
     command: "create"
     overwrite: yes
-
-- name: Wait for SSH to come up
-  wait_for:
-    host: '{{ item }}'
-    port: 22
-    delay: 60
-    timeout: 300
-    state: started
-  with_items:
-    - "{{ bastion_public_ip }}"

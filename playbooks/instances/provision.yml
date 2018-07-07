@@ -4,7 +4,6 @@
   gather_facts: false
   roles:
     - role: ../../roles/get_vpc_facts
-    - role: ../../roles/create_bastion
     - role: ../../roles/create_instances
     - role: ../../roles/create_dns
     - role: ../../roles/create_ssh
