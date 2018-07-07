@@ -24,10 +24,10 @@
         volume_type: gp2        
         delete_on_termination: true
     count_tag:
-      Name: "base_centos"
+      Name: "image_builder"
     instance_tags:
-      Name: "base_centos"
-      role: "base_centos"
+      Name: "image_builder"
+      role: "image_builder"
     exact_count: 1
     assign_public_ip: yes
   register: ec2_base

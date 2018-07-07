@@ -10,12 +10,17 @@
     - role: ../../roles/create_ssh
     - role: ../../roles/create_host_groups
 
+- name: Gather facts
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../../roles/get_availability_zone
+
 - name: Configure Cluster
   hosts: created_instances
   gather_facts: false
   vars:
     state: 'present'
   roles:
-    - ../../roles/get_availability_zone
     - ../../roles/configure_instances
   remote_user: "{{ instance_user }}"
