@@ -5,9 +5,9 @@
   roles:
     - role: ../../roles/get_vpc_facts
     - role: ../../roles/create_instances
+    - role: ../../roles/create_host_groups
     - role: ../../roles/create_dns
     - role: ../../roles/create_ssh
-    - role: ../../roles/create_host_groups
 
 - name: Gather facts
   hosts: localhost

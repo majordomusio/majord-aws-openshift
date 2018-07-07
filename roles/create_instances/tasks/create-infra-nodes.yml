@@ -22,7 +22,7 @@
     count_tag:
       Name: "infra{{item}}_{{ namespace }}"
     instance_tags:
-      "{'Name':'infra{{item}}_{{ namespace }}','namespace':'{{ namespace }}','kubernetes.io/cluster/{{ namespace }}':'{{ namespace }}','role':'infra','group':'cluster'}"
+      "{'Name':'infra{{item}}_{{ namespace }}','namespace':'{{ namespace }}','kubernetes.io/cluster/{{ namespace }}':'{{ namespace }}','cn':'infra{{ item }}','role':'infra','group':'cluster'}"
     exact_count: 1
     assign_public_ip: yes
   with_sequence: start=1 end={{infra_nodes|int}}
