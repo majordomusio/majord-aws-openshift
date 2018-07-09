@@ -1,0 +1,40 @@
+
+
+- name: Start Datadog Docker Agent on Master Nodes
+  shell: >
+        docker run -d --name dd-agent -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        -v /proc/:/host/proc/:ro \
+        -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
+        -e DD_API_KEY={{ dd_api_key }} \
+        -e DD_HOSTNAME={{ item.cn }}.{{ namespace }}.{{ public_dns_zone }} \
+        datadog/agent:latest
+  delegate_to: "{{ item.public_ip }}"
+  remote_user: "{{ instance_user }}"  
+  become: true
+  with_items: "{{ all_master_nodes }}"
+
+- name: Start Datadog Docker Agent on Infra Nodes
+  shell: >
+        docker run -d --name dd-agent -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        -v /proc/:/host/proc/:ro \
+        -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
+        -e DD_API_KEY={{ dd_api_key }} \
+        -e DD_HOSTNAME={{ item.cn }}.{{ namespace }}.{{ public_dns_zone }} \
+        datadog/agent:latest
+  delegate_to: "{{ item.public_ip }}"
+  remote_user: "{{ instance_user }}"  
+  become: true
+  with_items: "{{ all_infra_nodes }}"
+
+- name: Start Datadog Docker Agent on App Nodes
+  shell: >
+        docker run -d --name dd-agent -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        -v /proc/:/host/proc/:ro \
+        -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
+        -e DD_API_KEY={{ dd_api_key }} \
+        -e DD_HOSTNAME={{ item.cn }}.{{ namespace }}.{{ public_dns_zone }} \
+        datadog/agent:latest
+  delegate_to: "{{ item.public_ip }}"
+  remote_user: "{{ instance_user }}"  
+  become: true
+  with_items: "{{ all_app_nodes }}"

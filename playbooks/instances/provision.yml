@@ -9,17 +9,17 @@
     - role: ../../roles/create_dns
     - role: ../../roles/create_ssh
 
-- name: Gather facts
-  hosts: localhost
-  gather_facts: false
-  roles:
-    - role: ../../roles/get_availability_zone
-
-- name: Configure Cluster
+- name: Configure Docker
   hosts: created_instances
   gather_facts: false
   vars:
     state: 'present'
   roles:
-    - ../../roles/configure_instances
+    - ../../roles/configure_docker
   remote_user: "{{ instance_user }}"
+
+- name: Configure Monitoring
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../../roles/get_vpc_facts

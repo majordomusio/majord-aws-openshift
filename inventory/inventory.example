@@ -8,9 +8,10 @@ all:
       ansible_connection: local
       ansible_python_interpreter: python
   vars:
-    # AWS access key
-    aws_access_key: AKI..
-    aws_secret_key: 7t..
+    # API access key
+    aws_access_key: AKI...
+    aws_secret_key: 7t...
+    dd_api_key: fd61...
     
     # The AWS region to deploy to
     region: eu-central-1
