@@ -22,4 +22,4 @@
   hosts: localhost
   gather_facts: false
   roles:
-    - role: ../../roles/get_vpc_facts
+    - role: ../../roles/configure_monitoring
