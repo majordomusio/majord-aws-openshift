@@ -2,7 +2,7 @@
 
 - name: Start Datadog Docker Agent on Master Nodes
   shell: >
-        docker run -d --name dd-agent -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        docker run -d --name dd-agent --restart always -v /var/run/docker.sock:/var/run/docker.sock:ro \
         -v /proc/:/host/proc/:ro \
         -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
         -e DD_API_KEY={{ dd_api_key }} \
@@ -15,7 +15,7 @@
 
 - name: Start Datadog Docker Agent on Infra Nodes
   shell: >
-        docker run -d --name dd-agent -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        docker run -d --name dd-agent --restart always -v /var/run/docker.sock:/var/run/docker.sock:ro \
         -v /proc/:/host/proc/:ro \
         -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
         -e DD_API_KEY={{ dd_api_key }} \
@@ -28,7 +28,7 @@
 
 - name: Start Datadog Docker Agent on App Nodes
   shell: >
-        docker run -d --name dd-agent -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        docker run -d --name dd-agent --restart always -v /var/run/docker.sock:/var/run/docker.sock:ro \
         -v /proc/:/host/proc/:ro \
         -v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
         -e DD_API_KEY={{ dd_api_key }} \
