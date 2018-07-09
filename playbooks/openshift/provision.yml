@@ -6,4 +6,4 @@
     - role: ../../roles/get_vpc_facts
     - role: ../../roles/get_node_facts
     - role: ../../roles/configure_inventory
-#    - role: ../roles/provision_openshift
+    - role: ../../roles/provision_openshift
