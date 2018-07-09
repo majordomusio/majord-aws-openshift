@@ -21,6 +21,3 @@
 - name: Enable and restart Docker
   shell: "systemctl enable docker && systemctl restart docker"
   become: true
-
-- debug:
-  msg: "{{ all_app_nodes }}"
