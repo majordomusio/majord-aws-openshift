@@ -1,14 +1,14 @@
   
 - name: Provision infra nodes
   ec2:
-    instance_type: "{{infra_node_type}}"
+    instance_type: "{{ infra_node_type }}"
     image:  "{{node_ami_find['images'][0]['image_id']}}"
     region: "{{ region }}"
     spot_price: "{{ infra_node_spot_price }}"
     spot_wait_timeout: 300
     wait: true
     key_name: "{{ key_name }}"
-    vpc_subnet_id: "{{subnet_id}}"
+    vpc_subnet_id: "{{ subnet_id }}"
     group: ['{{ namespace }}_internal', '{{ namespace }}_public_ingress', '{{ namespace }}_public_egress', '{{ namespace }}_ssh']
     volumes:
       - device_name: "/dev/sda1" 
@@ -25,7 +25,7 @@
       "{'Name':'infra{{item}}_{{ namespace }}','namespace':'{{ namespace }}','kubernetes.io/cluster/{{ namespace }}':'{{ namespace }}','cn':'infra{{ item }}','role':'infra','group':'cluster'}"
     exact_count: 1
     assign_public_ip: yes
-  with_sequence: start=1 end={{infra_nodes|int}}
+  with_sequence: start=1 end={{ infra_nodes|int }}
   register: ec2_infras
 
 - name: Register infra node facts

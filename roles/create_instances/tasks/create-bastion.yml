@@ -1,7 +1,7 @@
 
 - name: Provision bastion
   ec2:
-    instance_type: "{{ bastion_instance_type }}"
+    instance_type: "{{ bastion_node_type }}"
     image:  "{{bastion_ami_find['images'][0]['image_id']}}"
     region: "{{ region }}"
     spot_price: "{{ bastion_spot_price }}"
@@ -37,7 +37,7 @@
 
 - name: Add public bastion A record
   route53:
-    zone: "{{public_dns_zone}}"
+    zone: "{{ public_dns_zone }}"
     record: "bastion.{{ namespace }}.{{ public_dns_zone }}"
     type: A
     ttl: 300

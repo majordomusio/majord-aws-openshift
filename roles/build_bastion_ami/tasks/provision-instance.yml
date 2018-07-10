@@ -7,7 +7,7 @@
 
 - name: Provision AMI
   ec2:
-    instance_type: "{{ bastion_instance_type }}"
+    instance_type: "{{ bastion_node_type }}"
     image:  "{{ ami_find['images'][0]['image_id'] }}"
     region: "{{ region }}"
     wait: true

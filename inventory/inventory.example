@@ -40,12 +40,13 @@ all:
     #
     # See https://aws.amazon.com/ec2/pricing/on-demand/ for details on AWS instance sizes and pricing
     #
-    bastion_instance_type: "t2.small"
-    infra_node_type: "m4.xlarge"
+    bastion_node_type: "t2.small"
+    master_node_type: "m4.large"
+    infra_node_type: "m4.large"
     app_node_type: "m4.xlarge"
 
     bastion_spot_price: 0.03
-    infra_node_spot_price: 0.08
+    infra_node_spot_price: 0.04
     app_node_spot_price: 0.08
 
     # Public DNS zone setup
