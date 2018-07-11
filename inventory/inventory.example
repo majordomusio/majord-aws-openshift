@@ -35,6 +35,14 @@ all:
     # Cluster ID
     namespace: demo
 
+    # OpenShift deployment options
+    install_logging: false
+    install_metrics: false
+    install_prometheus: false
+    install_service_catalog: false
+    install_service_broker: false
+    install_management: false
+
     #
     # Instance types use for the different roles
     #
