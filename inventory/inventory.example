@@ -45,7 +45,8 @@ all:
     infra_node_type: "m4.large"
     app_node_type: "m4.xlarge"
 
-    bastion_spot_price: 0.03
+    bastion_spot_price: 0.02
+    master_node_spot_price: 0.04
     infra_node_spot_price: 0.04
     app_node_spot_price: 0.08
 

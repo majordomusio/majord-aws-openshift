@@ -4,7 +4,7 @@
     instance_type: "{{ master_node_type }}"
     image:  "{{ node_ami_find['images'][0]['image_id'] }}"
     region: "{{ region }}"
-    spot_price: "{{ infra_node_spot_price }}"
+    spot_price: "{{ master_node_spot_price }}"
     spot_wait_timeout: 300
     wait: true
     key_name: "{{ key_name }}"
