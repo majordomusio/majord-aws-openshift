@@ -9,15 +9,6 @@
       "tag:group": "cluster"
   register: ec2_facts
 
-- name: Terminate EC2 VMs
-  ec2:
-    state: absent
-    region: "{{ region }}"
-    instance_ids: "{{ item.instance_id }}"
-    wait: no
-  with_items: "{{ ec2_facts.instances }}"
-  when: item.state != 'terminated'
-
 # In OCP 3.7 volumes are tagged using the kube cluster tag
 # so we can be sure we are deleting volumes belonging to the
 # cluster we are tearing down
@@ -27,6 +18,15 @@
     filters:
         "{'tag:kubernetes.io/cluster/{{ namespace }}':'owned','status':'available'}"
   register: aws_volumes
+
+- name: Terminate EC2 VMs
+  ec2:
+    state: absent
+    region: "{{ region }}"
+    instance_ids: "{{ item.instance_id }}"
+    wait: no
+  with_items: "{{ ec2_facts.instances }}"
+  when: item.state != 'terminated'
 
 - name: Delete dynamic volumes
   ec2_vol:
