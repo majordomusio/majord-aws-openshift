@@ -1,0 +1,34 @@
+
+- name: Provision Cluster
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../roles/get_vpc_facts
+    - role: ../roles/create_instances
+    - role: ../roles/create_host_groups
+    - role: ../roles/create_dns
+    - role: ../roles/create_ssh
+
+- name: Configure Docker
+  hosts: created_instances
+  gather_facts: false
+  vars:
+    state: 'present'
+  roles:
+    - ../roles/configure_docker
+  remote_user: "{{ instance_user }}"
+
+- name: Configure Monitoring
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: ../roles/configure_monitoring
+
+- name: Install OpenShift
+  hosts: localhost
+  roles:
+    - role: ../roles/get_availability_zone
+    - role: ../roles/get_vpc_facts
+    - role: ../roles/get_node_facts
+    - role: ../roles/configure_inventory
+    - role: ../roles/provision_openshift
