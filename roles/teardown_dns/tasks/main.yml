@@ -4,7 +4,12 @@
     query: hosted_zone
   register: hosted_zones
   
-- name: Delete public wildcard route (e.g. *.apps.ocp.example.com)
+- name: Delete public wildcard route (e.g. apps.ocp.example.com)
+  include: delete-route.yml zone="{{ public_dns_zone }}" record="apps.{{ namespace }}.{{ public_dns_zone }}" private_zone="false"
+  wait: yes
+  ignore_errors: true
+
+- name: Delete public wildcard route (e.g. *.svc.ocp.example.com)
   include: delete-route.yml zone="{{ public_dns_zone }}" record="*.{{ public_subdomain_prefix }}.{{ namespace }}.{{ public_dns_zone }}" private_zone="false"
   wait: yes
   ignore_errors: true
