@@ -10,7 +10,8 @@ The cluster has the following instances / nodes:
 * 1 .. n App Nodes
 * 1 Bastion host
 
-The playbooks create the AWS infrastructure to support above cluster types before installing OpenShift itself.
+The playbooks create the AWS infrastructure for the cluster before starting the OpenShift installation. 
+OpenShift is installed using the official Ansible playbooks from [openshift/openshift-ansible](https://github.com/openshift/openshift-ansible).
 
 ## Where do I start?
 
