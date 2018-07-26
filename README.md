@@ -1,14 +1,14 @@
 # ansible-aws-cluster-openshift
 
 This repository contains [Ansible](https://www.ansible.com/) roles and
-playbooks to install simple [OpenShift](https://www.openshift.com/) clusters on AWS.
+playbooks to install a simple development [OpenShift](https://www.openshift.com/) clusters on AWS.
 
-The following cluster types are supported:
+The cluster has the following instances / nodes:
 
-* Small - 1 Master Node, 1 .. n App Nodes
-* Medium - 1 Master Node, 1 Infra Node, 1 .. n App Nodes
-* Large - 3 Master Nodes, 2 Infra Nodes, 1 Load Balancer, 3 .. n App Nodes
-* Single Developer - A OpenShift installation on a single EC2 instance. (COMING SOON).
+* 1 Master Node
+* 1.. n Infra Nodes
+* 1 .. n App Nodes
+* 1 Bastion host
 
 The playbooks create the AWS infrastructure to support above cluster types before installing OpenShift itself.
 
@@ -53,25 +53,34 @@ vars:
 
 Changing all other variables is OPTIONAL. More configuration options can be found in file `playbooks/group_vars/all`.
 
-#### Step 2 - Create the AMI
+#### Step 2 - Create the AMIs
 
 Start the creation of the pre-built AMI:
 
 ```shell
-ansible-playbook -i inventory/<your_inventory_file> playbooks/build_ami.yml
+ansible-playbook -i inventory/<your_inventory_file> playbooks/build_bastion_ami.yml
+ansible-playbook -i inventory/<your_inventory_file> playbooks/build_node_ami.yml
 ```
 
-#### Step 3 - Create the Cluster
+#### Step 3 - Create the VPC
 
-Run the main playbook to create the infrastructure and then create the cluster:
+The FIST TIME a cluster is created, the necessary networking configuration, security groups etc have to be created:
+
+```shell
+ansible-playbook -i inventory/<your_inventory_file> playbooks/infrastructure/provision.yml
+```
+
+#### Step 4 - Create the Cluster
+
+Run the main playbook to create the instances and install OpenShift:
 
 ```shell
 ansible-playbook -i inventory/<your_inventory_file> playbooks/provision.yml
 ```
 
-The creation of a large cluster (Infrastructure and OpenShift) will take aproximately 45 minutes.
+The creation of a large cluster (Infrastructure and OpenShift) will take aproximately 30 minutes.
 
-#### Step 4 - Access the Cluster
+#### Step 5 - Access the Cluster
 
 Once the provisioning tasks are done, you can access the cluster via it's public hostname, e.g:  
 
@@ -89,36 +98,38 @@ When prompted for a username and password, simply choose any username/password c
 Remove the OpenShift cluster:
 
 ```shell
-ansible-playbook -i inventory/<your_inventory_file> playbooks/deprovision.yml
+ansible-playbook -i inventory/<your_inventory_file> playbooks/instances/deprovision.yml
 ```
 
 ## Configuration
 
-#### Cluster Types
+The inventory file contains a number of flags to indicate if some OpenShift feature such as log aggregation or 
+metrics collection should be installed by default. 
 
-The playbooks support the following types of clusters:
-
-* Small - 1 Master Node, 1 .. n App Nodes
-* Medium - 1 Master Node, 1 Infra Node, 1 .. n App Nodes
-* Large - 3 Master Nodes, 2 Infra Nodes, 1 Load Balancer, 3 .. n App Nodes
-
-The type of cluster that will be provisioned depends on the following variables in your inventory file:
+The following options are supported:
 
 ```yaml
-vars:
-  # Cluster size
-  master_nodes: 1
-  infra_nodes: 0
-  app_nodes: 1
+  # Installs the EFK stack for log collection
+  # See https://docs.openshift.org/latest/install_config/aggregate_logging.html
+  install_logging: false
+
+  # Install metrics collection
+  # See https://docs.openshift.org/latest/install_config/cluster_metrics.html
+  install_metrics: false
+  install_prometheus: false
+
+  # Install the service catalog / service broker
+  # See https://docs.openshift.org/latest/architecture/service_catalog/index.html
+  install_service_catalog: false
+  install_service_broker: false
+
+  # Install ManageIQ / CloudForms to manage the clusters infrastructure
+  # See https://docs.openshift.org/latest/install_config/cfme/index.html
+  install_management: false
 ```
 
-The following rules define the cluster type:
-
-| master_nodes | infra_nodes | app_nodes | Cluster Type |
-|--------------|-------------|-----------|--------------|
-|      1       |      0      |  1 .. n   |  SMALL       |
-|      1       |      > 0    |  1 .. n   |  MEDIUM      |
-|      3       |      2 ..   |  3 .. n   |  LARGE       |
+In case you want to further customize the OpenShift deployment options, head over to file `roles/configure_inventory/inventory_template.cfg` 
+and make the necessary adjustments. A complete inventory file with all possible options is provided (see file hosts.example).
 
 #### Spot Instances
 
@@ -127,9 +138,10 @@ By default, EC2 Spot Instances are used. The maximum amount to bid can be set in
 ```yaml
 vars:
   # EC2 instance configuration
-  bastion_spot_price: 0.04
-  infra_node_spot_price: 0.10
-  app_node_spot_price: 0.10
+  bastion_spot_price: 0.02
+  master_node_spot_price: 0.04
+  infra_node_spot_price: 0.04
+  app_node_spot_price: 0.08
 ```
 
 To disable spot instances, simply remove their bid price:
@@ -139,14 +151,9 @@ vars:
   # EC2 instance configuration
   bastion_spot_price:
   infra_node_spot_price:
+  infra_node_spot_price:
   app_node_spot_price:
 ```
-
-## Cluster Topology
-
-TBD
-
-![HA Cluster](./docs/large-openshift.png)
 
 ## What is next?
 
